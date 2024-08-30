@@ -19,6 +19,8 @@ const getCurrentMonthTotals = async (req, res, next) => {
       {
         $group: {
           _id: null,
+          provideBalance: { $sum: "$provideBalance" },
+          buaBill: { $sum: "$buaBill" },
           totalBalance: { $sum: "$totalBalance" },
           totalDue: { $sum: "$dueBalance" },
           totalMill: { $sum: "$totalMill" },
@@ -26,8 +28,6 @@ const getCurrentMonthTotals = async (req, res, next) => {
         },
       },
     ]);
-
-    console.log(result);
 
     return result[0];
   } catch (error) {

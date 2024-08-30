@@ -20,14 +20,10 @@ setRouters(app);
 // import error handler
 setErrorHandler(app);
 
-// Cron job for Task A at 12:00 PM every day
-// cron.schedule("0 12 * * *", () => {
-//   console.log("Running Task A at 12:00 PM");
-// });
-// Cron job for Task A at 12:00 PM every day
-cron.schedule("* * * * *", (req, res, next) => {
-  createEachBorderMill(req, res, next);
-  console.log("cron done");
+// Cron job for Task A at 11:59 PM every day
+cron.schedule("59 23 * * *", () => {
+  createEachBorderMill();
+  console.log("cron job executed at 11:59 PM");
 });
 
 const port = process.env.PORT || 9190;

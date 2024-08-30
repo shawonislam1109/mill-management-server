@@ -4,12 +4,22 @@ const {
   createBorderListService,
   getBorderListByIdService,
   deleteBorderListService,
+  getAllBorderFilerMonthWays,
 } = require("./service");
 
 // border list get controller
 const getAllBorderListsController = async (req, res, next) => {
   try {
     const borderLists = await getAllBorderListsService(req, res, next);
+    return res.status(200).json({ data: borderLists });
+  } catch (error) {
+    next(error);
+  }
+};
+// border list get controller
+const getAllBorderListsMonthFilterController = async (req, res, next) => {
+  try {
+    const borderLists = await getAllBorderFilerMonthWays(req, res, next);
     return res.status(200).json({ data: borderLists });
   } catch (error) {
     next(error);
@@ -29,8 +39,12 @@ const updateBorderListController = async (req, res, next) => {
 // border list create controller
 const createBorderListController = async (req, res, next) => {
   try {
-    const borderList = await createBorderListService(req, res, next);
-    return res.status(201).json({ data: borderList });
+    const { saveBorderList, borderTransition } = await createBorderListService(
+      req,
+      res,
+      next
+    );
+    return res.status(201).json({ data: { saveBorderList, borderTransition } });
   } catch (error) {
     next(error);
   }
@@ -62,4 +76,5 @@ module.exports = {
   getAllBorderListsController,
   getBorderListByIdController,
   updateBorderListController,
+  getAllBorderListsMonthFilterController,
 };

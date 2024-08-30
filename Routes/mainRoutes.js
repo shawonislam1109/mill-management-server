@@ -1,6 +1,8 @@
 const authRoutes = require("../src/auth/routes");
 const borderRoutes = require("../src/border/routes");
+const buaRoutes = require("../src/bua/router");
 const dashboardRoutes = require("../src/dashboard/routes");
+const borderMillHistoryRoutes = require("../src/millCount/routes");
 
 const routes = [
   {
@@ -12,8 +14,16 @@ const routes = [
     handler: borderRoutes,
   },
   {
+    path: "/border-history",
+    handler: borderMillHistoryRoutes,
+  },
+  {
     path: "/dashboard",
     handler: dashboardRoutes,
+  },
+  {
+    path: "/bua",
+    handler: buaRoutes,
   },
   {
     path: "/",

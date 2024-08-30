@@ -38,7 +38,10 @@ const borderList = new Schema(
       type: Number,
       default: 0,
     },
-
+    buaBill: {
+      type: Number,
+      default: 0,
+    },
     isTrash: {
       type: Boolean,
       default: false,

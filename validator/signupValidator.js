@@ -16,10 +16,6 @@ exports.signupValidator = [
   // .custom((val) => /[^A-za-z0-9\s]/g.test(val))
   // .withMessage("Username not use unique characters"),
   check("email")
-    .notEmpty()
-    .withMessage("Email is required")
-    .isEmail()
-    .withMessage("Invalid email address")
     .custom(async (email) => {
       let user = await UserModel.findOne({ email });
       if (user) {

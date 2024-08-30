@@ -6,7 +6,7 @@ const millPrice = {
 
 const activeMissPrice = (fullMill, schedule) => {
   if (fullMill) {
-    return { bill: 90, mill: 3 };
+    return { bill: 90, mill: 2.5 };
   } else if (Array.isArray(schedule) && schedule.length > 0) {
     let scheduleBill = 0;
     let scheduleMill = 0;
