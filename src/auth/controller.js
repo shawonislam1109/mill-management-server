@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const UserModel = require("../../model/User");
 const validationError = require("../../utils/validationError");
+const BorderList = require("../border/model");
 
 //  > ====== SIGN UP CONTROLLER ==========
 const signupController = async (req, res, next) => {
@@ -153,24 +154,75 @@ const getAllUser = async (req, res, next) => {
 //  => mill status
 const millStatusController = async (req, res, next) => {
   const { millOff, fullMill, schedule } = req?.body;
+  const { userId } = req.query;
+
   try {
-    const userMillActive = await UserModel.findOneAndUpdate(
-      {
-        _id: req.user?.userId,
+    const targetUserId = userId || req.user?.userId;
+    const isManager = req?.user?.role === "manager";
+
+    if (userId && !isManager) {
+      return res.status(403).json({ message: "UNAUTHORIZED" });
+    }
+
+    // MONTH SECTION START
+    const currentDate = new Date();
+    const startOfMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      1
+    ).toISOString();
+    const endOfMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() + 1,
+      0, // Last day of the current month
+      23, // Last hour of the day
+      59, // Last minute of the hour
+      59 // Last second of the minute
+    ).toISOString();
+    // DATE CALCULATION
+
+    const findBorder = await BorderList.findOne({
+      isTrash: false,
+      border: targetUserId,
+      createdAt: {
+        $gte: startOfMonth,
+        $lt: endOfMonth,
       },
+    });
+
+    if (!findBorder) {
+      return res
+        .status(403)
+        .json({ message: "You are Not Current Month Border" });
+    }
+
+    // Retrieve all BorderList documents for the current month
+    const borderLists = await BorderList.findOneAndUpdate(
       {
-        $set: {
-          millOff,
-          fullMill,
-          schedule,
+        isTrash: false,
+        border: targetUserId,
+        createdAt: {
+          $gte: startOfMonth,
+          $lt: endOfMonth,
         },
       },
+      { $set: { millOff, fullMill, schedule } },
       { new: true }
     );
-    res
-      .status(201)
-      .json({ data: userMillActive, message: "User Mill Count Active" });
-  } catch (error) {}
+
+    const userMillActive = await UserModel.findOneAndUpdate(
+      { _id: targetUserId },
+      { $set: { millOff, fullMill, schedule } },
+      { new: true }
+    );
+
+    res.status(201).json({
+      data: { user: userMillActive, border: borderLists },
+      message: "User Mill Count Active",
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error });
+  }
 };
 
 module.exports = {

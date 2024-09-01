@@ -1,4 +1,5 @@
 const { isTimestampInCurrentMonth } = require("../../utils/borderMonthCheck");
+const { currentMonthFilter } = require("../../utils/CurrentMonthFilter");
 const BorderList = require("./model");
 const BorderTransition = require("./transition/model");
 
@@ -10,17 +11,8 @@ const createBorderListService = async (req, res, next) => {
     }
 
     // DATE CALCULATION
-    const currentDate = new Date();
-    const startOfMonth = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      1
-    ).toISOString();
-    const startOfNextMonth = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth() + 1,
-      1
-    ).toISOString();
+    // MONTH SECTION START
+    const { startOfMonth, endOfMonth } = currentMonthFilter();
     // DATE CALCULATION
 
     const borderDocument = await BorderList.findOne({
@@ -28,7 +20,7 @@ const createBorderListService = async (req, res, next) => {
       isTrash: false,
       createdAt: {
         $gte: startOfMonth,
-        $lt: startOfNextMonth,
+        $lt: endOfMonth,
       },
     });
 
@@ -155,21 +147,8 @@ const getBorderListByIdService = async (req, res, next) => {
 const getAllBorderListsService = async (req, res, next) => {
   try {
     // DATE CALCULATION
-    const currentDate = new Date();
-    const startOfMonth = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      1
-    ).toISOString();
-    const endOfMonth = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth() + 1,
-      0, // Last day of the current month
-      23, // Last hour of the day
-      59, // Last minute of the hour
-      59 // Last second of the minute
-    ).toISOString();
-    // DATE CALCULATION
+    // MONTH SECTION START
+    const { startOfMonth, endOfMonth } = currentMonthFilter();
 
     // Retrieve all BorderList documents for the current month
     const borderLists = await BorderList.find({
@@ -192,26 +171,16 @@ const getAllBorderFilerMonthWays = async (req, res, next) => {
   try {
     const { month } = req.query;
 
-    if (!month) {
-      return res.status(400).json({ message: "Month is required" });
-    }
+    // DATE CALCULATION
+    // MONTH SECTION START
+    const { startOfMonth, endOfMonth } = currentMonthFilter(month);
 
-    const monthDate = new Date(month);
-    if (isNaN(monthDate)) {
-      return res.status(400).json({ message: "Invalid date format" });
-    }
-
-    const monthValue = monthDate.getUTCMonth() + 1; // JavaScript months are 0-indexed
-    const yearValue = monthDate.getUTCFullYear();
-
-    // Retrieve all BorderList documents that match the specified month and year
+    // Retrieve all BorderList documents that match the specified month
     const borderLists = await BorderList.find({
       isTrash: false,
-      $expr: {
-        $and: [
-          { $eq: [{ $month: "$createdAt" }, monthValue] },
-          { $eq: [{ $year: "$createdAt" }, yearValue] },
-        ],
+      createdAt: {
+        $gte: startOfMonth,
+        $lte: endOfMonth,
       },
     }).sort({ createdAt: -1 });
 

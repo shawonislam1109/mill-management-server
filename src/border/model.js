@@ -46,6 +46,15 @@ const borderList = new Schema(
       type: Boolean,
       default: false,
     },
+    fullMill: {
+      type: Boolean,
+    },
+    schedule: {
+      type: Array,
+    },
+    millOff: {
+      type: Boolean,
+    },
   },
   {
     timestamps: true,

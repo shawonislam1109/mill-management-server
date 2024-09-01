@@ -1,3 +1,4 @@
+const { currentMonthFilter } = require("../../../utils/CurrentMonthFilter");
 const BorderList = require("../model");
 const BorderTransition = require("./model");
 const mongoose = require("mongoose");
@@ -18,8 +19,17 @@ const balanceUpdate = async (req, res, next) => {
     // ADD BALANCE  CALCULATION
     const remindBalance = balanceAdd - dueBalance;
 
+    // MONTH SECTION START
+    const { startOfMonth, endOfMonth } = currentMonthFilter();
+
     const updateBalance = await BorderList.findOneAndUpdate(
-      { border: borderId },
+      {
+        border: borderId,
+        createdAt: {
+          $gte: startOfMonth,
+          $lte: endOfMonth,
+        },
+      },
       {
         $set: {
           totalBalance:
@@ -35,6 +45,9 @@ const balanceUpdate = async (req, res, next) => {
       },
       { new: true }
     );
+
+    console.log("updateBalance", updateBalance);
+    console.log("borderId", borderId);
 
     const borderTransition = new BorderTransition({
       border: borderId,
@@ -73,10 +86,9 @@ const balanceUpdate = async (req, res, next) => {
 const transitionHistory = async (req, res, next) => {
   try {
     const { borderId } = req.params;
-    const startOfMonth = new Date(new Date().setDate(1)); // Start of the current month
-    const endOfMonth = new Date(
-      new Date().setMonth(new Date().getMonth() + 1, 0)
-    ); // End of the current month
+    // End of the current month
+    // MONTH SECTION START
+    const { startOfMonth, endOfMonth } = currentMonthFilter();
 
     const borderTransition = await BorderTransition.find({
       border: borderId,
@@ -112,17 +124,15 @@ const transitionHistoryFilter = async (req, res, next) => {
       return res.status(400).json({ message: "Invalid date format" });
     }
 
-    const monthValue = monthDate.getUTCMonth() + 1;
-    const yearValue = monthDate.getUTCFullYear();
+    // MONTH SECTION START
+    const { startOfMonth, endOfMonth } = currentMonthFilter(month);
 
     // find data bae
     const findTransitionHistory = await BorderTransition.find({
       border: borderId,
-      $expr: {
-        $and: [
-          { $eq: [{ $month: "$createdAt" }, monthValue] },
-          { $eq: [{ $year: "$createdAt" }, yearValue] },
-        ],
+      createdAt: {
+        $gte: startOfMonth,
+        $lt: endOfMonth,
       },
     }).sort({ createdAt: -1 });
 

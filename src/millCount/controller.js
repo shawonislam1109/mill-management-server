@@ -1,5 +1,6 @@
 const UserModel = require("../../model/User");
 const { activeMissPrice } = require("../../utils/activeMillPrice");
+const { currentMonthFilter } = require("../../utils/CurrentMonthFilter");
 const BorderList = require("../border/model");
 const BuaDetails = require("../bua/model");
 const BorderMillCount = require("./model");
@@ -20,30 +21,39 @@ const createEachBorderMill = async () => {
     const buaDetails = await BuaDetails.findOne({ status: "ACTIVE" });
     if (!buaDetails) return; // Exit if no active BUA details found
 
+    // MONTH SECTION START
+    const { startOfMonth, endOfMonth } = currentMonthFilter();
+
     // Fetch active border list documents
     const activeBorders = await BorderList.find({
       status: "ACTIVE",
       isTrash: false,
+      createdAt: {
+        $gte: startOfMonth,
+        $lt: endOfMonth,
+      },
     });
 
     // Process each border concurrently
     await Promise.all(
       activeBorders.map(async (border) => {
         try {
-          const user = await UserModel.findById(border.border);
-          if (!user) return;
+          if (!border.fullMill && !border.schedule) return;
 
-          const { bill, mill } = activeMissPrice(user.fullMill, user.schedule);
+          const { bill, mill } = activeMissPrice(
+            border.fullMill,
+            border.schedule
+          );
 
           if (bill && mill) {
             // Create and save the mill count
             const millCount = new BorderMillCount({
               millCost: bill,
               millCount: mill,
-              border: user._id,
-              fullMill: user.fullMill,
-              millOff: user.millOff,
-              schedule: user.schedule,
+              border: border.border,
+              fullMill: border.fullMill,
+              millOff: border.millOff,
+              schedule: border.schedule,
             });
             await millCount.save();
 
@@ -78,10 +88,8 @@ const createEachBorderMill = async () => {
 // @GET MILL COUNT HISTORY FOR CURRENT MONTH
 const getAllMillHistory = async (req, res, next) => {
   try {
-    const startOfMonth = new Date(new Date().setDate(1)); // Start of the current month
-    const endOfMonth = new Date(
-      new Date().setMonth(new Date().getMonth() + 1, 0)
-    ); // End of the current month
+    // MONTH SECTION START
+    const { startOfMonth, endOfMonth } = currentMonthFilter();
 
     const find = await BorderMillCount.find({
       createdAt: {
@@ -102,10 +110,8 @@ const getAllMillHistory = async (req, res, next) => {
 const getByIdMillHistory = async (req, res, next) => {
   const { borderId } = req.params;
   try {
-    const startOfMonth = new Date(new Date().setDate(1)); // Start of the current month
-    const endOfMonth = new Date(
-      new Date().setMonth(new Date().getMonth() + 1, 0)
-    ); // End of the current month
+    // MONTH SECTION START
+    const { startOfMonth, endOfMonth } = currentMonthFilter();
 
     const find = await BorderMillCount.find({
       border: borderId,
@@ -143,17 +149,14 @@ const millHistoryFilter = async (req, res, next) => {
       return res.status(400).json({ message: "Invalid date format" });
     }
 
-    const monthValue = monthDate.getUTCMonth() + 1;
-    const yearValue = monthDate.getUTCFullYear();
-
+    // MONTH SECTION START
+    const { startOfMonth, endOfMonth } = currentMonthFilter(month);
     // find data bae
     const findMillHistory = await BorderMillCount.find({
       border: borderId,
-      $expr: {
-        $and: [
-          { $eq: [{ $month: "$createdAt" }, monthValue] },
-          { $eq: [{ $year: "$createdAt" }, yearValue] },
-        ],
+      createdAt: {
+        $gte: startOfMonth,
+        $lte: endOfMonth,
       },
     }).sort({ createdAt: -1 });
 
