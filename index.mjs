@@ -1,14 +1,18 @@
-const express = require("express");
-const mongoose = require("mongoose");
-require("dotenv").config();
-const cron = require("node-cron");
-const app = express();
+import express from "express";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import cron from "node-cron";
 
 // Import modules
-const setRouters = require("./Routes/mainRoutes");
-const setMiddleware = require("./middleware/mainMiddleware");
-const setErrorHandler = require("./errorHandler/errorHandler");
-const { createEachBorderMill } = require("./src/millCount/controller");
+import setRouters from "./Routes/mainRoutes.mjs";
+import setMiddleware from "./middleware/mainMiddleware.mjs";
+import setErrorHandler from "./errorHandler/errorHandler.mjs";
+import { createEachBorderMill } from "./src/millCount/controller.mjs";
+
+// Initialize dotenv
+dotenv.config();
+
+const app = express();
 
 // Use middleware
 setMiddleware(app);
@@ -26,7 +30,6 @@ cron.schedule("59 23 * * *", () => {
 
 // Environment variables
 const port = process.env.PORT || 9190;
-const user = process.env.USERNAME_BD;
 const password = process.env.DB_PASSWORD;
 
 async function run() {
