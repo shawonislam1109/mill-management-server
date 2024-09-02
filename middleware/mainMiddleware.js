@@ -3,11 +3,15 @@ const morgan = require("morgan");
 const cors = require("cors");
 
 // Allowed origins array
-const allowedOrigins = ["http://localhost:5173/"];
+const allowedOrigins = [
+  "http://localhost:5173", // Remove trailing slash
+  "https://mill-management.vercel.app",
+];
 
 // CORS configuration with dynamic origin handling
 const corsOptions = {
   origin: function (origin, callback) {
+    console.log(origin);
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -18,12 +22,12 @@ const corsOptions = {
   credentials: true, // Allow credentials (e.g., cookies)
 };
 
-//  middleware
+// Middleware array
 const middleware = [
   morgan("dev"),
   express.urlencoded({ extended: true }),
   express.json(),
-  cors(allowedOrigins),
+  cors(corsOptions), // Pass corsOptions here
 ];
 
 module.exports = (app) => {
