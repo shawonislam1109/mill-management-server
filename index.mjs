@@ -5,9 +5,9 @@ import cron from "node-cron";
 
 // Import modules
 import setRouters from "./Routes/mainRoutes.mjs";
-import setMiddleware from "./middleware/mainMiddleware.mjs";
 import setErrorHandler from "./errorHandler/errorHandler.mjs";
 import { createEachBorderMill } from "./src/millCount/controller.mjs";
+import { setupMiddleware } from "./middleware/mainMiddleware.mjs";
 
 // Initialize dotenv
 dotenv.config();
@@ -15,7 +15,7 @@ dotenv.config();
 const app = express();
 
 // Use middleware
-setMiddleware(app);
+setupMiddleware(app);
 
 // Use routes
 setRouters(app);
@@ -49,5 +49,4 @@ async function run() {
     process.exit(1); // Exit the process with an error code
   }
 }
-
 run();
