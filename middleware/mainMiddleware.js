@@ -5,7 +5,7 @@ const cors = require("cors");
 // Allowed origins array
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://mill-management-server.vercel.app/",
+  "https://mill-management.vercel.app/",
 ];
 
 // CORS configuration with dynamic origin handling
