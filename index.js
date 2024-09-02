@@ -20,13 +20,13 @@ setRouters(app);
 setErrorHandler(app);
 
 // Cron job for Task A at 11:59 PM every day
-// cron.schedule("59 23 * * *", () => {
-//   createEachBorderMill();
-// });
-cron.schedule("* * * * *", () => {
+cron.schedule("59 23 * * *", () => {
   createEachBorderMill();
-  console.log("cron is executed");
 });
+// cron.schedule("* * * * *", () => {
+//   createEachBorderMill();
+//   console.log("cron is executed");
+// });
 
 const port = process.env.PORT || 9190;
 
@@ -44,9 +44,8 @@ async function run() {
     // Correct the connection string format
     // const uri = `mongodb+srv://mill_manage_ment:${password}@cluster0.5rnuhbi.mongodb.net/millManagement?ssl=true&replicaSet=atlas-xxx-shard-0&authSource=admin&retryWrites=true&w=majority`;
     const uri = `mongodb+srv://mill_manage_ment:${password}@cluster0.5rnuhbi.mongodb.net/millManagement?ssl=true&retryWrites=true&w=majority`;
-
     // Create a Mongoose client with the MongoClientOptions object
-    await mongoose.connect(process.env.MONGODB_URI, clientOptions);
+    await mongoose.connect(uri, clientOptions);
 
     // Start the Express.js server
     app.listen(port, () => {
