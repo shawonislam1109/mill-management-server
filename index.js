@@ -31,7 +31,7 @@ const password = process.env.DB_PASSWORD;
 
 async function run() {
   try {
-    const uri = `mongodb+srv://mill_manage_ment:Mzo9xp69yF8axaQr@cluster0.5rnuhbi.mongodb.net/millManagement?ssl=true&retryWrites=true&w=majority`;
+    const uri = `mongodb+srv://mill_manage_ment:${password}@cluster0.5rnuhbi.mongodb.net/millManagement?ssl=true&retryWrites=true&w=majority`;
 
     await mongoose.connect(uri, {
       useNewUrlParser: true,

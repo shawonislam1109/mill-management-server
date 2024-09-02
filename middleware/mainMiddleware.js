@@ -4,7 +4,7 @@ const cors = require("cors");
 
 // Allowed origins array
 const allowedOrigins = [
-  "http://localhost:5173", // Remove trailing slash
+  "http://localhost:5173",
   "https://mill-management.vercel.app",
 ];
 
