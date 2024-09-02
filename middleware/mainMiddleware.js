@@ -3,10 +3,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 
 // Allowed origins array
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://mill-management.vercel.app/",
-];
+const allowedOrigins = ["http://localhost:5173/"];
 
 // CORS configuration with dynamic origin handling
 const corsOptions = {
