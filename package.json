@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.mjs",
   "scripts": {
-    "build": "yarn run build",
+    "build": "yarn build",
     "start": "node index.mjs",
     "dev": "nodemon index.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
