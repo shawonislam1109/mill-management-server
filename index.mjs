@@ -24,9 +24,12 @@ setRouters(app);
 setErrorHandler(app);
 
 // Cron job for Task A at 11:59 PM every day
-cron.schedule("59 23 * * *", () => {
-  createEachBorderMill();
-});
+// cron.schedule("59 23 * * *", () => {
+//   createEachBorderMill();
+// });
+
+// Use the tasks route
+app.use("/api/tasks", createEachBorderMill);
 
 // Environment variables
 const port = process.env.PORT || 9190;

@@ -40,7 +40,7 @@ export const signupValidator = [
     .custom(async (phoneNumber) => {
       let findPhoneNumber = await UserModel.findOne({ phoneNumber });
       if (findPhoneNumber) {
-        return Promise.reject("phone number is already use");
+        throw new Error("phone number is already use");
       }
     }),
 
