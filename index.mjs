@@ -25,12 +25,12 @@ setRouters(app);
 setErrorHandler(app);
 
 // Cron job for Task A at 11:59 PM every day
-// cron.schedule("59 23 * * *", () => {
-//   createEachBorderMill();
-// });
+cron.schedule("10 0 * * *", () => {
+  createEachBorderMill();
+});
 
 // Use the tasks route
-app.use("/api/tasks", jwtVerify, createEachBorderMill);
+// app.use("/api/tasks", createEachBorderMill);
 
 // Environment variables
 const port = process.env.PORT || 9190;
@@ -40,10 +40,7 @@ async function run() {
   try {
     const uri = `mongodb+srv://mill_manage_ment:${password}@cluster0.5rnuhbi.mongodb.net/millManagement?ssl=true&retryWrites=true&w=majority`;
 
-    await mongoose.connect(uri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(uri);
 
     app.listen(port, () => {
       console.log(`Server is running on port ${port}`);

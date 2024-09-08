@@ -45,10 +45,16 @@ const allowedOrigins = [
 //   credentials: true, // Allow credentials (e.g., cookies)
 // };
 
+// app.use(cors({
+//   origin: 'https://mill-management.netlify.app', // replace with your Netlify URL
+//   methods: ['GET', 'POST', 'PUT', 'DELETE'], // specify allowed methods
+//   credentials: true // if you are using cookies or authorization headers
+// }));
+
 // Middleware setup function
 export const setupMiddleware = (app) => {
   app.use(morgan("dev"));
   app.use(express.urlencoded({ extended: true }));
   app.use(express.json());
-  app.use(cors({ origin: "*" })); // Pass corsOptions here
+  app.use(cors({ origin: "*" }));
 };
