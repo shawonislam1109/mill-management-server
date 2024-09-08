@@ -8,6 +8,7 @@ import setRouters from "./Routes/mainRoutes.mjs";
 import setErrorHandler from "./errorHandler/errorHandler.mjs";
 import { createEachBorderMill } from "./src/millCount/controller.mjs";
 import { setupMiddleware } from "./middleware/mainMiddleware.mjs";
+import { jwtVerify } from "./middleware/jwtMiddleware.mjs";
 
 // Initialize dotenv
 dotenv.config();
@@ -29,7 +30,7 @@ setErrorHandler(app);
 // });
 
 // Use the tasks route
-app.use("/api/tasks", createEachBorderMill);
+app.use("/api/tasks", jwtVerify, createEachBorderMill);
 
 // Environment variables
 const port = process.env.PORT || 9190;

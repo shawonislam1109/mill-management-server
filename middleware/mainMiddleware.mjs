@@ -3,12 +3,38 @@ import morgan from "morgan";
 import cors from "cors";
 
 // Allowed origins array
-const allowedOrigins = ["http://localhost:5173/"];
+const allowedOrigins = [
+  "http://localhost:5173/",
+  "https://mill-management.vercel.app/api/v1",
+  "https://mill-management.netlify.app",
+];
+
+// {
+//   "version": 2,
+//   "builds": [
+//     {
+//       "src": "index.mjs",
+//       "use": "@vercel/node"
+//     }
+//   ],
+//   "routes": [
+//     {
+//       "src": "/(.*)",
+//       "dest": "/index.mjs",
+//       "methods": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+//       "headers": {
+//         "Access-Control-Allow-Origin": "*",
+//         "Access-Control-Allow-Methods": "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+//         "Access-Control-Allow-Headers": "Content-Type,Authorization"
+//       }
+//     }
+//   ]
+
+// }
 
 // CORS configuration with dynamic origin handling
 // const corsOptions = {
 //   origin: function (origin, callback) {
-//     console.log(origin);
 //     if (!origin || allowedOrigins.includes(origin)) {
 //       callback(null, true);
 //     } else {
@@ -24,5 +50,5 @@ export const setupMiddleware = (app) => {
   app.use(morgan("dev"));
   app.use(express.urlencoded({ extended: true }));
   app.use(express.json());
-  app.use(cors()); // Pass corsOptions here
+  app.use(cors({ origin: "*" })); // Pass corsOptions here
 };
